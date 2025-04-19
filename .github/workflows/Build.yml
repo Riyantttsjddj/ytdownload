@@ -33,7 +33,7 @@ jobs:
         pip install buildozer
         pip install yt-dlp  # Install yt-dlp instead of pytube
 
-    # Modify buildozer.spec automatically
+    # Modify buildozer.spec dynamically
     - name: Modify buildozer.spec dynamically
       run: |
         # Mengedit buildozer.spec
@@ -49,10 +49,19 @@ jobs:
       run: |
         buildozer -v android debug
 
-    # Upload APK as an artifact (optional)
+    # Check if APK exists and upload it
+    - name: Check if APK exists
+      run: |
+        if [ -f "bin/YTDownloaderApp-debug.apk" ]; then
+          echo "APK found, proceeding to upload."
+        else
+          echo "APK not found. Exiting..."
+          exit 1
+        fi
+
+    # Upload APK as an artifact
     - name: Upload APK
       uses: actions/upload-artifact@v2
       with:
         name: YTDownloaderApp-debug.apk
         path: bin/YTDownloaderApp-debug.apk
-        
