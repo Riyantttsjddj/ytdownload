@@ -1,69 +1,26 @@
-name: Build Android APK
+name: Simple Upload Test
 
-on:
+on: 
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    # Step 1: Checkout code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Step 2: Set up Python
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-
-    # Step 3: Install dependencies
-    - name: Install dependencies
+    - name: Upload test file
       run: |
-        sudo apt update
-        sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
-        pip install --upgrade pip
-        pip install kivy
-        pip install buildozer
-        pip install yt-dlp  # Install yt-dlp instead of pytube
-
-    # Step 4: Modify buildozer.spec dynamically
-    - name: Modify buildozer.spec dynamically
-      run: |
-        # Mengedit buildozer.spec
-        sed -i 's/requirements = python3,kivy/pytube/requirements = python3,kivy,yt-dlp/' buildozer.spec
-        sed -i 's/android.permissions = INTERNET/android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE/' buildozer.spec
-        sed -i 's/android.api = 29/android.api = 29/' buildozer.spec
-        sed -i 's/android.minapi = 21/android.minapi = 21/' buildozer.spec
-        sed -i 's/android.sdk = 29/android.sdk = 29/' buildozer.spec
-        sed -i 's/android.arch = armeabi-v7a/android.arch = armeabi-v7a/' buildozer.spec
-
-    # Step 5: Build APK with Buildozer
-    - name: Build APK with Buildozer
-      run: |
-        buildozer -v android debug
-
-    # Step 6: Verifikasi apakah file APK sudah ada di folder bin/
-    - name: Check if APK exists
-      run: |
-        echo "Mengecek apakah file APK sudah ada..."
-        ls -l bin/
-        if [ -f "bin/YTDownloaderApp-debug.apk" ]; then
-          echo "APK ditemukan, melanjutkan ke upload."
-        else
-          echo "APK tidak ditemukan, build gagal!"
-          exit 1
-        fi
-
-    # Step 7: Upload APK as an artifact (versi terbaru v3)
+        mkdir -p bin
+        touch bin/test.apk
+        ls bin/
+      
     - name: Upload APK
       uses: actions/upload-artifact@v3
       with:
-        name: YTDownloaderApp-debug.apk
-        path: bin/YTDownloaderApp-debug.apk
+        name: test-apk
+        path: bin/test.apk
