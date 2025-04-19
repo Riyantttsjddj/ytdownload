@@ -1,26 +1,10 @@
-name: Simple Upload Test
-
-on: 
-  push:
-    branches:
-      - main
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Upload test file
-      run: |
-        mkdir -p bin
-        touch bin/test.apk
-        ls bin/
-      
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-apk
-        path: bin/test.apk
+- name: Check if APK exists
+  run: |
+    echo "Mengecek apakah file APK sudah ada di folder bin/"
+    ls -la bin/
+    if [ -f "bin/YTDownloaderApp-debug.apk" ]; then
+      echo "APK ditemukan, melanjutkan ke upload."
+    else
+      echo "APK tidak ditemukan, build gagal!"
+      exit 1
+    fi
