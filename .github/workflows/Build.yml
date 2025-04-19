@@ -13,17 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # Check out the code from the repository
+    # Step 1: Checkout code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Setup Python
+    # Step 2: Set up Python
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.8'
 
-    # Install dependencies
+    # Step 3: Install dependencies
     - name: Install dependencies
       run: |
         sudo apt update
@@ -33,7 +33,7 @@ jobs:
         pip install buildozer
         pip install yt-dlp  # Install yt-dlp instead of pytube
 
-    # Modify buildozer.spec dynamically
+    # Step 4: Modify buildozer.spec dynamically
     - name: Modify buildozer.spec dynamically
       run: |
         # Mengedit buildozer.spec
@@ -44,22 +44,24 @@ jobs:
         sed -i 's/android.sdk = 29/android.sdk = 29/' buildozer.spec
         sed -i 's/android.arch = armeabi-v7a/android.arch = armeabi-v7a/' buildozer.spec
 
-    # Build APK with Buildozer
+    # Step 5: Build APK with Buildozer
     - name: Build APK with Buildozer
       run: |
         buildozer -v android debug
 
-    # Check if APK exists and upload it
+    # Step 6: Verifikasi apakah file APK sudah ada di folder bin/
     - name: Check if APK exists
       run: |
+        echo "Mengecek apakah file APK sudah ada..."
+        ls -l bin/
         if [ -f "bin/YTDownloaderApp-debug.apk" ]; then
-          echo "APK found, proceeding to upload."
+          echo "APK ditemukan, melanjutkan ke upload."
         else
-          echo "APK not found. Exiting..."
+          echo "APK tidak ditemukan, build gagal!"
           exit 1
         fi
 
-    # Upload APK as an artifact
+    # Step 7: Upload APK as an artifact
     - name: Upload APK
       uses: actions/upload-artifact@v2
       with:
